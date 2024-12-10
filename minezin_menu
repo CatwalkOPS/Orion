@@ -1,6 +1,6 @@
--- Carregar a biblioteca Orion
+-- Carregar a biblioteca Orion 
 local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/CatwalkOPS/Orion/refs/heads/main/source')))()
-local Window = OrionLib:MakeWindow({Name = "MINEZIN MENU 🎄", HidePremium = false, SaveConfig = true, ConfigFolder = "TestConfig"})
+local Window = OrionLib:MakeWindow({Name = "SOUFTH MENU", HidePremium = false, SaveConfig = true, ConfigFolder = "TestConfig"})
 
 -- Criar a aba ESP
 local Tab1 = Window:MakeTab({
@@ -14,8 +14,17 @@ local espEnabled = false
 local espLines = {}
 local espBillboards = {}
 local selectedColor = Color3.new(1, 0, 0) -- Cor padrão: vermelho
-local espRadius = 500 -- Raio padrão (Valor inicial entre 200 e 1000)
+local espRadius = 500 -- Raio padrão (Valor inicial entre 200 e 5,000,000)
 local showDistance = false -- Flag para mostrar a distância
+
+-- Função para criar a InfoBox
+local function createInfoBox(funcName, status)
+    game:GetService("StarterGui"):SetCore("SendNotification", {
+        Title = funcName,
+        Text = status,
+        Duration = 5
+    })
+end
 
 -- Função para ativar ou desativar o ESP
 local function toggleESP()
@@ -113,6 +122,9 @@ local function toggleESP()
         espLines = {}
         espBillboards = {}
     end
+
+    -- Exibir a InfoBox de Sucesso
+    createInfoBox("ESP", "ESP ativado/desativado com sucesso!")
 end
 
 -- Botão para ativar/desativar ESP
@@ -179,124 +191,62 @@ Tab1:AddSlider({
 
 -- Criar a aba HUBS
 local Tab2 = Window:MakeTab({
-    Name = "HUBS",  -- Nome da aba
-    Icon = "rbxassetid://4483345998",  -- Icone da aba (você pode mudar esse ID se quiser outro ícone)
-    PremiumOnly = false  -- Caso deseje que só jogadores premium vejam essa aba, altere para true
+    Name = "HUBS",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
 })
 
 -- Adicionar a função Infinite Yield à aba HUBS
 Tab2:AddButton({
     Name = "Infinite Yield",
     Callback = function()
-        loadstring(game:HttpGet(('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'),true))()
+        loadstring(game:HttpGet(('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'), true))()
+        
+        -- Exibir a InfoBox de Sucesso para Infinite Yield
+        createInfoBox("Infinite Yield", "Infinite Yield carregado com sucesso!")
     end
 })
 
--- Finalizar e mostrar o menu
-OrionLib:Init()
-local Tab2 = Window:MakeTab({
-    Name = "FE SCRIPTS",
-    Icon = "rbxassetid://4483345998",
-    PremiumOnly = false
-})
-
--- Função a ser executada quando o botão InfiniteYield for clicado
+-- Funções para FE SCRIPTS
 local function onButtonClick()
-    notify("Carregando InfiniteYield...")
+    createInfoBox("InfiniteYield", "Carregando InfiniteYield...")
     loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
-    notify("InfiniteYield carregado!")
+    createInfoBox("InfiniteYield", "InfiniteYield carregado com sucesso!")
 end
 
--- Função a ser executada quando o botão Fe Invisible for clicado
 local function InvisExec()
-    notify("Carregando Fe Invisible...")
+    createInfoBox("Fe Invisible", "Carregando Fe Invisible...")
     loadstring(game:HttpGet("https://pastebin.com/raw/c3vgfjhn"))()
-    notify("Fe Invisible carregado!")
+    createInfoBox("Fe Invisible", "Fe Invisible carregado com sucesso!")
 end
 
--- Definir a função getRoot
-local function getRoot(char)
-    local rootPart = char:FindFirstChild("HumanoidRootPart") or char:FindFirstChild("Torso") or char:FindFirstChild("UpperTorso")
-    return rootPart
-end
-
--- Função a ser executada quando o botão Aimbot for clicado
 local function fakeout()
-    notify("Carregando Aimbot...")
+    createInfoBox("Aimbot", "Carregando Aimbot...")
     loadstring(game:HttpGet("https://raw.githubusercontent.com/Exunys/Aimbot-Script/refs/heads/main/Aimbot%20Script.lua"))()
-    notify("Aimbot carregado!")
+    createInfoBox("Aimbot", "Aimbot carregado com sucesso!")
 end
 
--- Configurar variáveis globais
-local speaker = game:GetService("Players").LocalPlayer
-local OrgDestroyHeight = workspace.FallenPartsDestroyHeight
-
--- Função Fakeout que move o jogador para o void por 4 segundos e o retorna à posição anterior
-local function fakeo()
-    notify("Iniciando Fakeout...")
-    local root = getRoot(speaker.Character)
-    if root then
-        local oldpos = root.CFrame
-        workspace.FallenPartsDestroyHeight = 0
-        root.CFrame = CFrame.new(0, OrgDestroyHeight - 25, 0)
-        root.Anchored = true
-        wait(4)
-        root.Anchored = false
-        root.CFrame = oldpos
-        workspace.FallenPartsDestroyHeight = OrgDestroyHeight
-        notify("Fakeout concluído!")
-    else
-        notify("Parte raiz não encontrada!")
-    end
-end
-
--- Função para carregar F3X
 local function F3XLOADER()
-    notify("Carregando F3X...")
+    createInfoBox("F3X", "Carregando F3X...")
     loadstring(game:GetObjects("rbxassetid://6695644299")[1].Source)()
-    notify("F3X carregado!")
+    createInfoBox("F3X", "F3X carregado com sucesso!")
 end
 
--- Função para carregar Dex
 local function DEXLOAD()
-    notify('Carregando Dex...')
+    createInfoBox('Dex', 'Carregando Dex...')
     loadstring(game:HttpGet("https://raw.githubusercontent.com/infyiff/backup/main/dex.lua"))()
-    notify('Dex foi carregado!')
+    createInfoBox('Dex', 'Dex carregado com sucesso!')
 end
 
-local function Deitar()
-	local humanoid = speaker.Character:FindFirstChildWhichIsA("Humanoid")
-	humanoid.Sit = true
-	task.wait(0.1)
-	humanoid.RootPart.CFrame = humanoid.RootPart.CFrame * CFrame.Angles(math.pi * 0.5, 0, 0)
-	for _, v in ipairs(humanoid:GetPlayingAnimationTracks()) do
-		v:Stop()
- end
- end
-
-local function Sit()
-	speaker.Character:FindFirstChildWhichIsA("Humanoid").Sit = true
+local function fakeo()
+    createInfoBox("FakeOP", "Carregando FakeOP...")
+    loadstring(game:HttpGet("https://pastebin.com/raw/DvAtXywF"))()
+    createInfoBox("FakeOP", "FakeOP carregado com sucesso!")
 end
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
--- Adicionar botões na aba FE SCRIPTS
+-- Botões para os FE SCRIPTS
 Tab2:AddButton({
-    Name = "InfiniteYield",
+    Name = "Infinite Yield",
     Callback = onButtonClick
 })
 
@@ -311,31 +261,16 @@ Tab2:AddButton({
 })
 
 Tab2:AddButton({
-    Name = "DEX",
-    Callback = DEXLOAD
-})
-
-Tab2:AddButton({
-    Name = "Fakeout",
-    Callback = fakeo
-})
-
-Tab2:AddButton({
     Name = "F3X",
     Callback = F3XLOADER
 })
 
 Tab2:AddButton({
-	Name = "Deitar",
-	Callback = Deitar
+    Name = "Dex",
+    Callback = DEXLOAD
 })
 
 Tab2:AddButton({
-	Name =	"Sentar",	
-	Callback = Sit
+    Name = "FakeOP",
+    Callback = fakeo
 })
-
-
-
--- TAB 1
-
