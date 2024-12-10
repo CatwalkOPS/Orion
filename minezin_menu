@@ -1,6 +1,6 @@
 -- Carregar a biblioteca Orion 
 local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/CatwalkOPS/Orion/refs/heads/main/source')))()
-local Window = OrionLib:MakeWindow({Name = "SOUFTH MENU🚀", HidePremium = false, SaveConfig = true, ConfigFolder = "TestConfig"})
+local Window = OrionLib:MakeWindow({Name = "SOUFTH MENU 👺", HidePremium = false, SaveConfig = true, ConfigFolder = "TestConfig"})
 
 -- Criar a aba ESP
 local Tab1 = Window:MakeTab({
