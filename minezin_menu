@@ -4,7 +4,7 @@ local Window = OrionLib:MakeWindow({Name = "MINEZIN MENU", HidePremium = false, 
 
 -- Criar a aba HUBS
 local Tab1 = Window:MakeTab({
-    Name = "HUBS",
+    Name = "ESP",
     Icon = "rbxassetid://4483345998",
     PremiumOnly = false
 })
