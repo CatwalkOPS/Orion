@@ -2,7 +2,7 @@
 local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/CatwalkOPS/Orion/refs/heads/main/source')))()
 local Window = OrionLib:MakeWindow({Name = "MINEZIN MENU", HidePremium = false, SaveConfig = true, ConfigFolder = "TestConfig"})
 
--- Criar a aba HUBS
+-- Criar a aba ESP
 local Tab1 = Window:MakeTab({
     Name = "ESP",
     Icon = "rbxassetid://4483345998",
@@ -164,16 +164,31 @@ Tab1:AddDropdown({
     end
 })
 
--- Slider para ajustar o raio do ESP (mínimo 200, máximo 1000)
+-- Slider para ajustar o raio do ESP (mínimo 200, máximo 5,000,000)
 Tab1:AddSlider({
     Name = "Raio do ESP",
     Min = 200,
-    Max = 1000,
+    Max = 5000000,
     Default = espRadius,
     Color = Color3.fromRGB(255, 255, 255),
     Increment = 10,
     Callback = function(value)
         espRadius = value
+    end
+})
+
+-- Criar a aba HUBS
+local Tab2 = Window:MakeTab({
+    Name = "HUBS",  -- Nome da aba
+    Icon = "rbxassetid://4483345998",  -- Icone da aba (você pode mudar esse ID se quiser outro ícone)
+    PremiumOnly = false  -- Caso deseje que só jogadores premium vejam essa aba, altere para true
+})
+
+-- Adicionar a função Infinite Yield à aba HUBS
+Tab2:AddButton({
+    Name = "Infinite Yield",
+    Callback = function()
+        loadstring(game:HttpGet(('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'),true))()
     end
 })
 
