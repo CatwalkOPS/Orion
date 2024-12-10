@@ -1,0 +1,181 @@
+-- Carregar a biblioteca Orion
+local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/CatwalkOPS/Orion/refs/heads/main/source')))()
+local Window = OrionLib:MakeWindow({Name = "MINEZIN MENU", HidePremium = false, SaveConfig = true, ConfigFolder = "TestConfig"})
+
+-- Criar a aba HUBS
+local Tab1 = Window:MakeTab({
+    Name = "HUBS",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
+
+-- Variáveis para controle do ESP
+local espEnabled = false
+local espLines = {}
+local espBillboards = {}
+local selectedColor = Color3.new(1, 0, 0) -- Cor padrão: vermelho
+local espRadius = 500 -- Raio padrão (Valor inicial entre 200 e 1000)
+local showDistance = false -- Flag para mostrar a distância
+
+-- Função para ativar ou desativar o ESP
+local function toggleESP()
+    espEnabled = not espEnabled
+
+    if espEnabled then
+        -- Ativar ESP
+        local localPlayer = game.Players.LocalPlayer
+        local localCharacter = localPlayer.Character or localPlayer.CharacterAdded:Wait()
+
+        -- Criar linhas e nomes para todos os jogadores
+        for _, player in pairs(game.Players:GetPlayers()) do
+            if player ~= localPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                -- Criar linha
+                local line = Drawing.new("Line")
+                line.Thickness = 1
+                line.Color = selectedColor
+                line.Visible = true
+
+                -- Criar nome acima do jogador
+                local billboard = Instance.new("BillboardGui", player.Character)
+                billboard.Size = UDim2.new(0, 100, 0, 50)
+                billboard.Adornee = player.Character:FindFirstChild("HumanoidRootPart")
+                billboard.StudsOffset = Vector3.new(0, 3, 0)
+                billboard.AlwaysOnTop = true
+
+                local nameLabel = Instance.new("TextLabel", billboard)
+                nameLabel.Size = UDim2.new(1, 0, 1, 0)
+                nameLabel.Text = player.Name
+                nameLabel.TextColor3 = Color3.new(1, 1, 1) -- Nome sempre branco
+                nameLabel.BackgroundTransparency = 1
+                nameLabel.Font = Enum.Font.SourceSansBold
+                nameLabel.TextSize = 14
+
+                -- Guardar linha e billboard em tabelas para controle
+                espLines[player] = line
+                espBillboards[player] = {billboard = billboard, nameLabel = nameLabel}
+            end
+        end
+
+        -- Atualizar a posição das linhas e nomes continuamente
+        game:GetService("RunService").Heartbeat:Connect(function()
+            if not espEnabled then return end
+
+            for player, line in pairs(espLines) do
+                local localCharacter = game.Players.LocalPlayer.Character
+                if player.Character and player.Character:FindFirstChild("HumanoidRootPart") and localCharacter and localCharacter:FindFirstChild("HumanoidRootPart") then
+                    local localPos, onScreen1 = workspace.CurrentCamera:WorldToViewportPoint(localCharacter.HumanoidRootPart.Position)
+                    local targetPos, onScreen2 = workspace.CurrentCamera:WorldToViewportPoint(player.Character.HumanoidRootPart.Position)
+
+                    -- Calcular a distância entre os jogadores
+                    local distance = (localCharacter.HumanoidRootPart.Position - player.Character.HumanoidRootPart.Position).Magnitude
+
+                    -- Exibir linha e nome apenas se a distância estiver dentro do raio configurado
+                    if onScreen1 and onScreen2 and distance <= espRadius then
+                        -- Atualizar a posição da linha
+                        line.From = Vector2.new(localPos.X, localPos.Y)
+                        line.To = Vector2.new(targetPos.X, targetPos.Y)
+                        line.Visible = true
+
+                        -- Atualizar o nome do jogador ou a distância dependendo da opção
+                        if espBillboards[player] then
+                            local nameLabel = espBillboards[player].nameLabel
+                            if showDistance then
+                                nameLabel.Text = string.format("%s - %.1f m", player.Name, distance)
+                            else
+                                nameLabel.Text = player.Name
+                            end
+                            espBillboards[player].billboard.Enabled = true
+                        end
+                    else
+                        -- Desabilitar a linha e o nome se estiverem fora do raio
+                        line.Visible = false
+                        if espBillboards[player] then
+                            espBillboards[player].billboard.Enabled = false
+                        end
+                    end
+                else
+                    line.Visible = false
+                    if espBillboards[player] then
+                        espBillboards[player].billboard.Enabled = false
+                    end
+                end
+            end
+        end)
+
+    else
+        -- Desativar ESP e remover linhas e nomes
+        for _, line in pairs(espLines) do
+            line:Remove()
+        end
+        for _, billboardData in pairs(espBillboards) do
+            billboardData.billboard:Destroy()
+        end
+        espLines = {}
+        espBillboards = {}
+    end
+end
+
+-- Botão para ativar/desativar ESP
+Tab1:AddButton({
+    Name = "ESP Lines",
+    Callback = function()
+        toggleESP()
+    end
+})
+
+-- Checkbox para mostrar ou esconder a distância
+Tab1:AddToggle({
+    Name = "Mostrar Distância",
+    Default = false,
+    Callback = function(state)
+        showDistance = state
+    end
+})
+
+-- Dropdown para selecionar a cor da linha
+local colors = {
+    {Name = "Red", Color = Color3.new(1, 0, 0)},
+    {Name = "Green", Color = Color3.new(0, 1, 0)},
+    {Name = "Blue", Color = Color3.new(0, 0, 1)},
+    {Name = "Yellow", Color = Color3.new(1, 1, 0)},
+    {Name = "White", Color = Color3.new(1, 1, 1)},
+    {Name = "Purple", Color = Color3.new(0.5, 0, 0.5)},
+    {Name = "Cyan", Color = Color3.new(0, 1, 1)},
+    {Name = "Orange", Color = Color3.new(1, 0.5, 0)}
+}
+
+local colorOptions = {}
+for _, col in pairs(colors) do
+    table.insert(colorOptions, col.Name)
+end
+
+Tab1:AddDropdown({
+    Name = "Selecione a Cor da Linha ESP",
+    Options = colorOptions,
+    CurrentOption = "Red",
+    Flag = "ESPLineColor",
+    Callback = function(option)
+        for _, col in pairs(colors) do
+            if col.Name == option then
+                selectedColor = col.Color
+                break
+            end
+        end
+    end
+})
+
+-- Slider para ajustar o raio do ESP (mínimo 200, máximo 1000)
+Tab1:AddSlider({
+    Name = "Raio do ESP",
+    Min = 200,
+    Max = 1000,
+    Default = espRadius,
+    Color = Color3.fromRGB(255, 255, 255),
+    Increment = 10,
+    Callback = function(value)
+        espRadius = value
+    end
+})
+
+-- Finalizar e mostrar o menu
+OrionLib:Init()
