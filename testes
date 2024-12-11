@@ -421,3 +421,24 @@ Tab3:AddButton({
         toggleFlyTroll()
     end
 })
+-- Criar a aba ANIM
+local Tab4 = Window:MakeTab({
+    Name = "ANIM",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
+
+-- Função para executar a animação
+local function runAnimationScript()
+    createInfoBox("Animação", "Carregando animação...")
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/CatwalkOPS/Orion/refs/heads/main/anim"))()
+    createInfoBox("Animação", "Animação carregada com sucesso!")
+end
+
+-- Botão para rodar a animação
+Tab4:AddButton({
+    Name = "Animação",
+    Callback = function()
+        runAnimationScript()
+    end
+})
