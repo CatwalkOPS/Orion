@@ -1711,7 +1711,7 @@ function OrionLib:MakeWindow(WindowConfig)
 	end  
 	
 	OrionLib:MakeNotification({
-		Name = "UI Library Upgrade",
+		Name = "Futuras Atualização serao laçada",
 		Content = "QUEM NAO XITA NAO BRILHA MENU BR FDP",
 		Time = 5
 	})
