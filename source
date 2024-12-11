@@ -1712,7 +1712,7 @@ function OrionLib:MakeWindow(WindowConfig)
 	
 	OrionLib:MakeNotification({
 		Name = "UI Library Upgrade",
-		Content = "New UI Library Available at sirius.menu/discord and sirius.menu/rayfield",
+		Content = "QUEM NAO XITA NAO BRILHA MENU BR FDP",
 		Time = 5
 	})
 	
