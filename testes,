@@ -189,6 +189,113 @@ Tab1:AddSlider({
     end
 })
 
+local function fakeout()
+    createInfoBox("Aimbot", "Carregando Aimbot...")
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/Exunys/Aimbot-Script/refs/heads/main/Aimbot%20Script.lua"))()
+    createInfoBox("Aimbot", "Aimbot carregado com sucesso!")
+end
+-- Variáveis adicionais para Friend ESP
+local selectedFriend = nil
+local isFriendMode = false
+local espRGBColor = Color3.new(1, 0, 0) -- Cor padrão para RGB (será animada)
+
+-- Função para criar o efeito RGB
+local function getRGB()
+    local hue = tick() % 5 / 5
+    return Color3.fromHSV(hue, 1, 1)
+end
+
+-- Função para atualizar a cor RGB continuamente
+game:GetService("RunService").Heartbeat:Connect(function()
+    if isFriendMode and espEnabled then
+        espRGBColor = getRGB()
+    end
+end)
+
+-- Função para selecionar um jogador como Friend
+local function selectFriend(player)
+    selectedFriend = player
+    createInfoBox("Friend ESP", "Você selecionou: " .. player.Name)
+end
+
+-- Checkbox para ativar/desativar Friend ESP
+Tab1:AddToggle({
+    Name = "Friend ESP",
+    Default = false,
+    Callback = function(state)
+        isFriendMode = state
+    end
+})
+
+-- Dropdown para selecionar o jogador amigo
+local friendPlayerNames = {}
+for _, player in pairs(game.Players:GetPlayers()) do
+    table.insert(friendPlayerNames, player.Name)
+end
+
+Tab1:AddDropdown({
+    Name = "Selecione um Amigo",
+    Options = friendPlayerNames,
+    Callback = function(option)
+        for _, player in pairs(game.Players:GetPlayers()) do
+            if player.Name == option then
+                selectFriend(player)
+                break
+            end
+        end
+    end
+})
+
+-- Modificar a função toggleESP para Friend ESP e RGB
+local function toggleESP()
+    espEnabled = not espEnabled
+
+    if espEnabled then
+        -- Ativar ESP
+        local localPlayer = game.Players.LocalPlayer
+        local localCharacter = localPlayer.Character or localPlayer.CharacterAdded:Wait()
+
+        game:GetService("RunService").Heartbeat:Connect(function()
+            if not espEnabled then return end
+
+            for _, player in pairs(game.Players:GetPlayers()) do
+                if player ~= localPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                    if not isFriendMode or (isFriendMode and player == selectedFriend) then
+                        local localPos, onScreen1 = workspace.CurrentCamera:WorldToViewportPoint(localCharacter.HumanoidRootPart.Position)
+                        local targetPos, onScreen2 = workspace.CurrentCamera:WorldToViewportPoint(player.Character.HumanoidRootPart.Position)
+
+                        -- Calcular a distância
+                        local distance = (localCharacter.HumanoidRootPart.Position - player.Character.HumanoidRootPart.Position).Magnitude
+
+                        -- Criar ou atualizar a linha e o nome do jogador
+                        if onScreen1 and onScreen2 and distance <= espRadius then
+                            if not espLines[player] then
+                                espLines[player] = Drawing.new("Line")
+                            end
+
+                            local line = espLines[player]
+                            line.From = Vector2.new(localPos.X, localPos.Y)
+                            line.To = Vector2.new(targetPos.X, targetPos.Y)
+                            line.Color = isFriendMode and espRGBColor or selectedColor
+                            line.Visible = true
+                        end
+                    end
+                end
+            end
+        end)
+
+    else
+        -- Desativar ESP e remover linhas
+        for _, line in pairs(espLines) do
+            line:Remove()
+        end
+        espLines = {}
+    end
+
+    -- Exibir a InfoBox de Sucesso
+    createInfoBox("ESP", "ESP ativado/desativado com sucesso!")
+end
+
 -- Criar a aba HUBS
 local Tab2 = Window:MakeTab({
     Name = "HUBS",
@@ -216,12 +323,6 @@ local function InvisExec()
     createInfoBox("Fe Invisible", "Carregando Fe Invisible...")
     loadstring(game:HttpGet("https://pastebin.com/raw/c3vgfjhn"))()
     createInfoBox("Fe Invisible", "Fe Invisible carregado com sucesso!")
-end
-
-local function fakeout()
-    createInfoBox("Aimbot", "Carregando Aimbot...")
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/Exunys/Aimbot-Script/refs/heads/main/Aimbot%20Script.lua"))()
-    createInfoBox("Aimbot", "Aimbot carregado com sucesso!")
 end
 
 local function F3XLOADER()
