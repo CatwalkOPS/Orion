@@ -207,58 +207,37 @@ Tab2:AddButton({
     end
 })
 
--- Outras funções de FE SCRIPTS
-local function InvisExec()
-    createInfoBox("Fe Invisible", "Carregando Fe Invisible...")
-    loadstring(game:HttpGet("https://pastebin.com/raw/c3vgfjhn"))()
-    createInfoBox("Fe Invisible", "Fe Invisible carregado com sucesso!")
-end
+-- Função do Troll Loop
+local trollLoopEnabled = false
 
-local function fakeout()
-    createInfoBox("Aimbot", "Carregando Aimbot...")
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/Exunys/Aimbot-Script/refs/heads/main/Aimbot%20Script.lua"))()
-    createInfoBox("Aimbot", "Aimbot carregado com sucesso!")
-end
+local function toggleTrollLoop()
+    trollLoopEnabled = not trollLoopEnabled
 
-local function F3XLOADER()
-    createInfoBox("F3X", "Carregando F3X...")
-    loadstring(game:GetObjects("rbxassetid://6695644299")[1].Source)()
-    createInfoBox("F3X", "F3X carregado com sucesso!")
-end
-
-local function DEXLOAD()
-    createInfoBox('Dex', 'Carregando Dex...')
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/infyiff/backup/main/dex.lua"))()
-    createInfoBox('Dex', 'Dex carregado com sucesso!')
-end
-
-local function fakeo()
-    createInfoBox("FakeOP", "Carregando FakeOP...")
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/infyiff/backup/main/fakeop.lua"))()
-    createInfoBox("FakeOP", "FakeOP carregado com sucesso!")
+    -- Exemplo simples de Troll Loop
+    if trollLoopEnabled then
+        createInfoBox("Troll Loop", "Troll Loop ativado!")
+        -- Executar a ação de troll loop repetidamente
+        spawn(function()
+            while trollLoopEnabled do
+                -- Ação de trollagem, como mover o personagem ou fazer algo engraçado
+                local character = game.Players.LocalPlayer.Character
+                if character and character:FindFirstChild("HumanoidRootPart") then
+                    -- Exemplo de movimento aleatório
+                    local randomX = math.random(-100, 100)
+                    local randomZ = math.random(-100, 100)
+                    character.HumanoidRootPart.CFrame = character.HumanoidRootPart.CFrame + Vector3.new(randomX, 0, randomZ)
+                end
+                wait(1) -- Aguarda 1 segundo antes de executar novamente
+            end
+        end)
+    else
+        createInfoBox("Troll Loop", "Troll Loop desativado!")
+    end
 end
 
 Tab2:AddButton({
-    Name = "Fe Invisible",
-    Callback = InvisExec
-})
-
-Tab2:AddButton({
-    Name = "Aimbot",
-    Callback = fakeout
-})
-
-Tab2:AddButton({
-    Name = "F3X",
-    Callback = F3XLOADER
-})
-
-Tab2:AddButton({
-    Name = "Dex",
-    Callback = DEXLOAD
-})
-
-Tab2:AddButton({
-    Name = "FakeOP",
-    Callback = fakeo
+    Name = "Troll Loop",
+    Callback = function()
+        toggleTrollLoop()
+    end
 })
