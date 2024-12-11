@@ -1,4 +1,4 @@
--- Carregar a biblioteca Orion  
+-- Carregar a biblioteca Orion 
 local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/CatwalkOPS/Orion/refs/heads/main/source')))()
 local Window = OrionLib:MakeWindow({Name = "SOUFTH MENU 👺", HidePremium = false, SaveConfig = true, ConfigFolder = "TestConfig"})
 
@@ -196,48 +196,91 @@ local Tab2 = Window:MakeTab({
     PremiumOnly = false
 })
 
--- Adicionar a função Infinite Yield à aba HUBS uma vez
+-- Remover o botão de Infinite Yield e adicionar apenas um
 Tab2:AddButton({
-    Name = "Infinite Yield",
+    Name = "Carregar Script",
     Callback = function()
         loadstring(game:HttpGet(('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'), true))()
-        
-        -- Exibir a InfoBox de Sucesso para Infinite Yield
         createInfoBox("Infinite Yield", "Infinite Yield carregado com sucesso!")
     end
 })
 
--- Função do Troll Loop
-local trollLoopEnabled = false
+-- Criar a aba TROLL
+local Tab3 = Window:MakeTab({
+    Name = "TROLL",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
 
-local function toggleTrollLoop()
-    trollLoopEnabled = not trollLoopEnabled
+-- Variáveis para controle do Loop TP
+local selectedPlayer = nil
+local isLooping = false
 
-    -- Exemplo simples de Troll Loop
-    if trollLoopEnabled then
-        createInfoBox("Troll Loop", "Troll Loop ativado!")
-        -- Executar a ação de troll loop repetidamente
-        spawn(function()
-            while trollLoopEnabled do
-                -- Ação de trollagem, como mover o personagem ou fazer algo engraçado
-                local character = game.Players.LocalPlayer.Character
-                if character and character:FindFirstChild("HumanoidRootPart") then
-                    -- Exemplo de movimento aleatório
-                    local randomX = math.random(-100, 100)
-                    local randomZ = math.random(-100, 100)
-                    character.HumanoidRootPart.CFrame = character.HumanoidRootPart.CFrame + Vector3.new(randomX, 0, randomZ)
+-- Função para criar a InfoBox
+local function createInfoBox(funcName, status)
+    game:GetService("StarterGui"):SetCore("SendNotification", {
+        Title = funcName,
+        Text = status,
+        Duration = 5
+    })
+end
+
+-- Função para selecionar o jogador e mostrar notificação
+local function selectPlayer(player)
+    selectedPlayer = player
+    createInfoBox("Jogador Selecionado", "Você selecionou: " .. player.Name)
+end
+
+-- Função para iniciar/desativar o Loop TP
+local function toggleLoopTP()
+    if selectedPlayer then
+        isLooping = not isLooping
+        if isLooping then
+            -- Iniciar o loop de teleporte
+            createInfoBox("Loop TP", "Iniciando teleporte para " .. selectedPlayer.Name)
+
+            -- Teleportar para o jogador selecionado em loop
+            while isLooping do
+                if selectedPlayer and selectedPlayer.Character and selectedPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                    game.Players.LocalPlayer.Character:MoveTo(selectedPlayer.Character.HumanoidRootPart.Position)
                 end
-                wait(1) -- Aguarda 1 segundo antes de executar novamente
+                wait(1)  -- Esperar 1 segundo antes de teletransportar novamente
             end
-        end)
+        else
+            -- Desativar o loop de teleporte
+            createInfoBox("Loop TP", "Teleporte em loop desativado!")
+        end
     else
-        createInfoBox("Troll Loop", "Troll Loop desativado!")
+        -- Avisar se nenhum jogador foi selecionado
+        createInfoBox("Loop TP", "Selecione um jogador primeiro!")
     end
 end
 
-Tab2:AddButton({
-    Name = "Troll Loop",
+-- Adicionar a lista de jogadores para o Dropdown
+local playerNames = {}
+for _, player in pairs(game.Players:GetPlayers()) do
+    table.insert(playerNames, player.Name)
+end
+
+-- Dropdown para selecionar o jogador
+Tab3:AddDropdown({
+    Name = "Selecione um Jogador",
+    Options = playerNames,
+    Callback = function(option)
+        -- Encontrar o jogador com o nome selecionado
+        for _, player in pairs(game.Players:GetPlayers()) do
+            if player.Name == option then
+                selectPlayer(player)
+                break
+            end
+        end
+    end
+})
+
+-- Botão para iniciar/desativar o Loop TP
+Tab3:AddButton({
+    Name = "Iniciar/Desativar Loop TP",
     Callback = function()
-        toggleTrollLoop()
+        toggleLoopTP()
     end
 })
